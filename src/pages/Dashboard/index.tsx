@@ -1,30 +1,30 @@
-import { useEffect, useState } from 'react';
-
-import Header from '../../components/Header';
 import api from '../../services/api';
+import { useEffect, useState } from 'react';
+import Header from '../../components/Header';
 import Food from '../../components/Food/index';
 import ModalAddFood from '../../components/ModalAddFood/index';
 import ModalEditFood from '../../components/ModalEditFood/index';
 import { FoodsContainer } from './styles';
+import { FoodType } from '../../types';
 
 const Dashboard = () => {
-  const [foods, setFoods] = useState([]);
-  const [editingFood, setEditingFood] = useState({});
+  const [foods, setFoods] = useState<FoodType[]>([]);
+  const [editingFood, setEditingFood] = useState({} as FoodType);
   const [modalOpen, setModalOpen] = useState(false);
   const [editModalOpen, setEditModalOpen] = useState(false);
 
   useEffect(() => {
     async function getResponse() {
-      const response = await api.get('/foods');
+      const response = await api.get<FoodType[]>('/foods');
 
       setFoods([...response.data]);
     }
     getResponse();
   }, []);
 
-  async function handleAddFood(food) {
+  async function handleAddFood(food: FoodType) {
     try {
-      const response = await api.post('/foods', {
+      const response = await api.post<FoodType>('/foods', {
         ...food,
         available: true,
       });
@@ -35,7 +35,7 @@ const Dashboard = () => {
     }
   }
 
-  async function handleUpdateFood(food) {
+  async function handleUpdateFood(food: FoodType) {
     try {
       const foodUpdated = await api.put(`/foods/${editingFood.id}`, {
         ...editingFood,
@@ -55,7 +55,7 @@ const Dashboard = () => {
     }
   }
 
-  async function handleDeleteFood(id) {
+  async function handleDeleteFood(id: number) {
     await api.delete(`/foods/${id}`);
     const foodsFiltered = foods.filter((food) => food.id !== id);
 
@@ -70,7 +70,7 @@ const Dashboard = () => {
     setEditModalOpen(!editModalOpen);
   };
 
-  const handleEditFood = (food) => {
+  const handleEditFood = (food: FoodType) => {
     toggleEditModal();
     setEditingFood(food);
   };
